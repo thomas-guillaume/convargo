@@ -145,6 +145,7 @@ console.log(truckers);
 console.log(deliveries);
 console.log(actors);
 
+//computation of the shipping price
 for(var numDelivery=0; numDelivery<deliveries.length; numDelivery++)
 {
   var pricePerKm = 0;
@@ -156,6 +157,23 @@ for(var numDelivery=0; numDelivery<deliveries.length; numDelivery++)
       pricePerVolume=truckers[numTrucker].pricePerVolume;
     }
   }
-  deliveries[numDelivery].price = deliveries[numDelivery].distance*pricePerKm + deliveries[numDelivery].volume*pricePerVolume;
+
+  //computation of the decreasing according to the volume
+  var decreasing = 1;
+  if(deliveries[numDelivery].volume>=25)
+  {
+    decreasing = 0.5;
+  }
+  else if(deliveries[numDelivery].volume>=10)
+  {
+    decreasing = 0.7;
+  }
+  else if(deliveries[numDelivery].volume>=5)
+  {
+    decreasing = 0.9;
+  }
+
+
+  deliveries[numDelivery].price = decreasing*(deliveries[numDelivery].distance*pricePerKm + deliveries[numDelivery].volume*pricePerVolume);
 }
 console.log(deliveries);
