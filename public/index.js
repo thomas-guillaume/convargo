@@ -130,11 +130,11 @@ const actors = [{
     'type': 'credit',
     'amount': 0
   }, {
-    'who': 'treasury',
+    'who': 'insurance',
     'type': 'credit',
     'amount': 0
   }, {
-    'who': 'insurance',
+    'who': 'treasury',
     'type': 'credit',
     'amount': 0
   }, {
@@ -192,5 +192,23 @@ for(var numDelivery=0; numDelivery<deliveries.length; numDelivery++)
   deliveries[numDelivery].commission.insurance = 0.5*(commission - deductibleReduction);
   deliveries[numDelivery].commission.treasury = 1 + Math.floor(deliveries[numDelivery].distance/500);
   deliveries[numDelivery].commission.convargo = commission-(deliveries[numDelivery].commission.treasury + deliveries[numDelivery].commission.insurance);
+
+  //payment
+  for(var numActor = 0; numActor < actors.length ; numActor++)
+  {
+    if (actors[numActor].rentalId === deliveries[numDelivery].id)
+    {
+      //shipper
+      actors[numActor].payment[0].amount = shippingPrice + deductibleReduction;
+      //trucker
+      actors[numActor].payment[1].amount = deliveries[numDelivery].price - commission;
+      //insurance
+      actors[numActor].payment[2].amount = deliveries[numDelivery].commission.insurance;
+      //treasury
+      actors[numActor].payment[3].amount = deliveries[numDelivery].commission.treasury;
+      //convargo
+      actors[numActor].payment[4].amount = deliveries[numDelivery].commission.convargo;
+    }
+  }
 }
 console.log(deliveries);
