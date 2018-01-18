@@ -74,7 +74,7 @@ var deliveries = [{
 //list of actors for payment
 //useful from exercise 5
 const actors = [{
-  'deliveryId': 'bba9500c-fd9e-453f-abf1-4cd8f52af377',
+  'rentalId': 'bba9500c-fd9e-453f-abf1-4cd8f52af377',
   'payment': [{
     'who': 'shipper',
     'type': 'debit',
@@ -176,12 +176,20 @@ for(var numDelivery=0; numDelivery<deliveries.length; numDelivery++)
     decreasing = 0.9;
   }
 
+  //computation of additionnal charges (deductible)
+  var deductibleReduction = 0;
+  if(deliveries[numDelivery].options.deductibleReduction === true)
+  {
+    deductibleReduction = deliveries[numDelivery].volume;
+  }
 
-  deliveries[numDelivery].price = decreasing*(deliveries[numDelivery].distance*pricePerKm + deliveries[numDelivery].volume*pricePerVolume);
+  //price
+  var shippingPrice = decreasing*(deliveries[numDelivery].distance*pricePerKm + deliveries[numDelivery].volume*pricePerVolume);
+  deliveries[numDelivery].price = shippingPrice + deductibleReduction;
 
-  //computation of the commission
-  var commission = 0.3*deliveries[numDelivery].price;
-  deliveries[numDelivery].commission.insurance = 0.5*commission;
+  //computation of the commission (the additionnal charge goes to convargo, not to the trucker)
+  var commission = 0.3*(shippingPrice) + deductibleReduction;
+  deliveries[numDelivery].commission.insurance = 0.5*(commission - deductibleReduction);
   deliveries[numDelivery].commission.treasury = 1 + Math.floor(deliveries[numDelivery].distance/500);
   deliveries[numDelivery].commission.convargo = commission-(deliveries[numDelivery].commission.treasury + deliveries[numDelivery].commission.insurance);
 }
